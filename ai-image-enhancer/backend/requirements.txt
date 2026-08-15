@@ -1,0 +1,17 @@
+# Backend API
+fastapi
+uvicorn
+python-multipart
+
+# Image processing
+pillow
+opencv-python
+numpy
+
+# Machine learning
+torch
+torchvision
+
+# Testing
+pytest
+httpx
