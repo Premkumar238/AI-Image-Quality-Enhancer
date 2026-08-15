@@ -20,6 +20,9 @@ function App() {
           <p>
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
           </p>
+          <p className="mt-2 text-sm font-semibold text-green-600">
+            Tailwind CSS is working.
+          </p>
         </div>
         <button
           type="button"
