@@ -43,8 +43,49 @@ def test_srcnn_custom_configuration():
 def test_srcnn_has_layer_placeholders():
     model = SRCNN()
 
-    assert hasattr(model, "non_linear_mapping")
     assert hasattr(model, "reconstruction")
+
+
+def test_non_linear_mapping_exists():
+    model = SRCNN()
+
+    assert hasattr(model, "non_linear_mapping")
+
+
+def test_non_linear_mapping_is_conv2d():
+    model = SRCNN()
+
+    assert isinstance(model.non_linear_mapping, nn.Conv2d)
+
+
+def test_non_linear_mapping_input_channels():
+    model = SRCNN()
+
+    assert model.non_linear_mapping.in_channels == 64
+
+
+def test_non_linear_mapping_output_channels():
+    model = SRCNN()
+
+    assert model.non_linear_mapping.out_channels == 64
+
+
+def test_non_linear_mapping_kernel_size():
+    model = SRCNN()
+
+    assert model.non_linear_mapping.kernel_size == (5, 5)
+
+
+def test_non_linear_mapping_stride():
+    model = SRCNN()
+
+    assert model.non_linear_mapping.stride == (1, 1)
+
+
+def test_non_linear_mapping_padding():
+    model = SRCNN()
+
+    assert model.non_linear_mapping.padding == (2, 2)
 
 
 def test_feature_extraction_exists():

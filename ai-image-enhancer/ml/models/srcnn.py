@@ -15,7 +15,7 @@ class SRCNN(nn.Module):
         2. Non-linear mapping
         3. Reconstruction
 
-    Currently, only the feature extraction stage is implemented.
+    Currently, the feature extraction and non-linear mapping stages are implemented.
     """
 
     def __init__(
@@ -46,12 +46,21 @@ class SRCNN(nn.Module):
         )
         self.relu = nn.ReLU()
 
-        # Placeholders for future SRCNN layers.
-        self.non_linear_mapping: nn.Module | None = None
+        self.non_linear_mapping = nn.Conv2d(
+            in_channels=num_features,
+            out_channels=num_features,
+            kernel_size=5,
+            stride=1,
+            padding=2,
+        )
+
+        # Placeholder for future SRCNN layer.
         self.reconstruction: nn.Module | None = None
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Apply feature extraction to the input tensor."""
+        """Apply feature extraction and non-linear mapping to the input tensor."""
         x = self.feature_extraction(x)
+        x = self.relu(x)
+        x = self.non_linear_mapping(x)
         x = self.relu(x)
         return x
