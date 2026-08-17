@@ -4,7 +4,7 @@ function UploadArea({ onImageSelect, accept = 'image/*' }) {
   const [isDragging, setIsDragging] = useState(false)
 
   const handleFile = (file) => {
-    if (file && file.type.startsWith('image/')) {
+    if (file) {
       onImageSelect?.(file)
     }
   }
