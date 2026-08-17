@@ -1,4 +1,4 @@
-"""Tests for the SRCNN model skeleton."""
+"""Tests for the SRCNN model."""
 
 import sys
 from pathlib import Path
@@ -43,6 +43,56 @@ def test_srcnn_custom_configuration():
 def test_srcnn_has_layer_placeholders():
     model = SRCNN()
 
-    assert hasattr(model, "feature_extraction")
     assert hasattr(model, "non_linear_mapping")
     assert hasattr(model, "reconstruction")
+
+
+def test_feature_extraction_exists():
+    model = SRCNN()
+
+    assert hasattr(model, "feature_extraction")
+
+
+def test_feature_extraction_is_conv2d():
+    model = SRCNN()
+
+    assert isinstance(model.feature_extraction, nn.Conv2d)
+
+
+def test_feature_extraction_kernel_size():
+    model = SRCNN()
+
+    assert model.feature_extraction.kernel_size == (9, 9)
+
+
+def test_feature_extraction_input_channels():
+    model = SRCNN()
+
+    assert model.feature_extraction.in_channels == 3
+
+
+def test_feature_extraction_output_channels():
+    model = SRCNN()
+
+    assert model.feature_extraction.out_channels == 64
+
+
+def test_feature_extraction_stride():
+    model = SRCNN()
+
+    assert model.feature_extraction.stride == (1, 1)
+
+
+def test_feature_extraction_padding():
+    model = SRCNN()
+
+    assert model.feature_extraction.padding == (4, 4)
+
+
+def test_forward_pass_output_shape():
+    model = SRCNN()
+    dummy_input = torch.randn(2, 3, 32, 32)
+
+    output = model(dummy_input)
+
+    assert output.shape == (2, 64, 32, 32)

@@ -15,8 +15,7 @@ class SRCNN(nn.Module):
         2. Non-linear mapping
         3. Reconstruction
 
-    This class currently defines the model configuration and structure only.
-    The convolution layers will be added in a later step.
+    Currently, only the feature extraction stage is implemented.
     """
 
     def __init__(
@@ -38,7 +37,21 @@ class SRCNN(nn.Module):
         self.out_channels = out_channels
         self.num_features = num_features
 
+        self.feature_extraction = nn.Conv2d(
+            in_channels=in_channels,
+            out_channels=num_features,
+            kernel_size=9,
+            stride=1,
+            padding=4,
+        )
+        self.relu = nn.ReLU()
+
         # Placeholders for future SRCNN layers.
-        self.feature_extraction: nn.Module | None = None
         self.non_linear_mapping: nn.Module | None = None
         self.reconstruction: nn.Module | None = None
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Apply feature extraction to the input tensor."""
+        x = self.feature_extraction(x)
+        x = self.relu(x)
+        return x
