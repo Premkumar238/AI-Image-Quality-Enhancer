@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import Header from './components/Header'
+import BackendStatus from './components/BackendStatus'
 import UploadArea from './components/UploadArea'
 import ImagePreview from './components/ImagePreview'
 import Button from './components/Button'
+import { checkHealth } from './services/api'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png']
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png']
@@ -18,6 +20,32 @@ function App() {
   const [previewUrl, setPreviewUrl] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [showResult, setShowResult] = useState(false)
+  const [backendStatus, setBackendStatus] = useState('checking')
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function fetchBackendHealth() {
+      try {
+        const health = await checkHealth()
+        if (isMounted && health.status === 'ok') {
+          setBackendStatus('connected')
+        } else if (isMounted) {
+          setBackendStatus('offline')
+        }
+      } catch {
+        if (isMounted) {
+          setBackendStatus('offline')
+        }
+      }
+    }
+
+    fetchBackendHealth()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   useEffect(() => {
     if (!selectedFile) {
@@ -55,7 +83,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header statusIndicator={<BackendStatus status={backendStatus} />} />
 
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <section className="mb-8 text-center">
