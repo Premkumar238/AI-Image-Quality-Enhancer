@@ -40,10 +40,41 @@ def test_srcnn_custom_configuration():
     assert model.num_features == 32
 
 
-def test_srcnn_has_layer_placeholders():
+def test_srcnn_has_reconstruction_layer():
     model = SRCNN()
 
     assert hasattr(model, "reconstruction")
+    assert isinstance(model.reconstruction, nn.Conv2d)
+
+
+def test_reconstruction_input_channels():
+    model = SRCNN()
+
+    assert model.reconstruction.in_channels == 64
+
+
+def test_reconstruction_output_channels():
+    model = SRCNN()
+
+    assert model.reconstruction.out_channels == 3
+
+
+def test_reconstruction_kernel_size():
+    model = SRCNN()
+
+    assert model.reconstruction.kernel_size == (5, 5)
+
+
+def test_reconstruction_stride():
+    model = SRCNN()
+
+    assert model.reconstruction.stride == (1, 1)
+
+
+def test_reconstruction_padding():
+    model = SRCNN()
+
+    assert model.reconstruction.padding == (2, 2)
 
 
 def test_non_linear_mapping_exists():
@@ -134,6 +165,22 @@ def test_forward_pass_output_shape():
     model = SRCNN()
     dummy_input = torch.randn(2, 3, 32, 32)
 
-    output = model(dummy_input)
+    with torch.no_grad():
+        output = model(dummy_input)
 
-    assert output.shape == (2, 64, 32, 32)
+    assert output.shape == (2, 3, 32, 32)
+
+
+def test_complete_forward_pass():
+    model = SRCNN()
+    dummy_input = torch.randn(2, 3, 32, 32)
+
+    with torch.no_grad():
+        output = model(dummy_input)
+
+    assert isinstance(output, torch.Tensor)
+    assert output.shape[0] == 2
+    assert output.shape[1] == 3
+    assert output.shape[2] == 32
+    assert output.shape[3] == 32
+    assert not torch.isnan(output).any()

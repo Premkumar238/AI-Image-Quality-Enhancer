@@ -10,12 +10,10 @@ class SRCNN(nn.Module):
     SRCNN is a deep learning model designed to reconstruct a higher-quality
     image from a lower-quality input image.
 
-    The full model will eventually contain three main stages:
+    The model contains three main stages:
         1. Feature extraction
         2. Non-linear mapping
         3. Reconstruction
-
-    Currently, the feature extraction and non-linear mapping stages are implemented.
     """
 
     def __init__(
@@ -54,13 +52,19 @@ class SRCNN(nn.Module):
             padding=2,
         )
 
-        # Placeholder for future SRCNN layer.
-        self.reconstruction: nn.Module | None = None
+        self.reconstruction = nn.Conv2d(
+            in_channels=num_features,
+            out_channels=out_channels,
+            kernel_size=5,
+            stride=1,
+            padding=2,
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Apply feature extraction and non-linear mapping to the input tensor."""
+        """Apply the full SRCNN forward pass to the input tensor."""
         x = self.feature_extraction(x)
         x = self.relu(x)
         x = self.non_linear_mapping(x)
         x = self.relu(x)
+        x = self.reconstruction(x)
         return x
