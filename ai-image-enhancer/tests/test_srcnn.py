@@ -3,13 +3,14 @@
 import sys
 from pathlib import Path
 
+import pytest
 import torch
 from torch import nn
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from ml.models import SRCNN
+from ml.models import SRCNN, count_parameters
 
 
 def test_srcnn_can_be_instantiated():
@@ -184,3 +185,130 @@ def test_complete_forward_pass():
     assert output.shape[2] == 32
     assert output.shape[3] == 32
     assert not torch.isnan(output).any()
+
+
+def test_standard_rgb_image_64x64():
+    model = SRCNN()
+    input_tensor = torch.randn(1, 3, 64, 64)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.shape == (1, 3, 64, 64)
+
+
+def test_batch_of_four_images():
+    model = SRCNN()
+    input_tensor = torch.randn(4, 3, 64, 64)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.shape == (4, 3, 64, 64)
+
+
+def test_different_image_size_128x128():
+    model = SRCNN()
+    input_tensor = torch.randn(2, 3, 128, 128)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.shape == (2, 3, 128, 128)
+
+
+@pytest.mark.parametrize("batch_size", [1, 2, 4])
+def test_different_batch_sizes(batch_size):
+    model = SRCNN()
+    input_tensor = torch.randn(batch_size, 3, 64, 64)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.shape == (batch_size, 3, 64, 64)
+
+
+@pytest.mark.parametrize(
+    ("batch_size", "height", "width"),
+    [(1, 64, 64), (2, 32, 32), (4, 128, 128)],
+)
+def test_output_has_three_rgb_channels(batch_size, height, width):
+    model = SRCNN()
+    input_tensor = torch.randn(batch_size, 3, height, width)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.shape[1] == 3
+
+
+@pytest.mark.parametrize(
+    ("batch_size", "height", "width"),
+    [(1, 64, 64), (2, 48, 48), (3, 128, 96)],
+)
+def test_spatial_dimensions_preserved(batch_size, height, width):
+    model = SRCNN()
+    input_tensor = torch.randn(batch_size, 3, height, width)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.shape[2] == height
+    assert output.shape[3] == width
+
+
+def test_output_dtype():
+    model = SRCNN()
+    input_tensor = torch.randn(1, 3, 64, 64)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.dtype == torch.float32
+
+
+def test_no_nan_or_infinity():
+    model = SRCNN()
+    input_tensor = torch.randn(2, 3, 64, 64)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert not torch.isnan(output).any().item()
+    assert not torch.isinf(output).any().item()
+
+
+def test_model_parameter_count():
+    model = SRCNN()
+    parameter_count = count_parameters(model)
+
+    expected_count = sum(
+        parameter.numel() for parameter in model.parameters() if parameter.requires_grad
+    )
+
+    assert parameter_count == expected_count
+    assert parameter_count > 0
+
+
+def test_evaluation_mode_inference():
+    model = SRCNN()
+    model.eval()
+    input_tensor = torch.randn(1, 3, 64, 64)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.shape == (1, 3, 64, 64)
+    assert not model.training
+
+
+def test_cpu_execution():
+    model = SRCNN()
+    model.eval()
+    input_tensor = torch.randn(1, 3, 64, 64)
+
+    with torch.no_grad():
+        output = model(input_tensor)
+
+    assert output.device.type == "cpu"
+    assert output.shape == (1, 3, 64, 64)
