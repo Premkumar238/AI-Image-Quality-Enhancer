@@ -1,0 +1,8 @@
+# ML pipeline, CLI, and tests
+numpy
+pillow
+torch
+torchvision
+
+# Testing
+pytest
