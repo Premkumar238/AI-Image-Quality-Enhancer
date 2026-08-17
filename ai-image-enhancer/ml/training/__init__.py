@@ -7,6 +7,7 @@ from .loss import create_loss_function
 from .optimizer import create_optimizer
 from .train_step import train_step
 from .trainer import train_model
+from .validation import validate_model
 
 __all__ = [
     "DatasetSplitResult",
@@ -17,4 +18,5 @@ __all__ = [
     "split_dataset",
     "train_model",
     "train_step",
+    "validate_model",
 ]
