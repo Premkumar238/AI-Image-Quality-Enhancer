@@ -6,7 +6,7 @@ from .dataset_split import DatasetSplitResult, split_dataset
 from .loss import create_loss_function
 from .optimizer import create_optimizer
 from .train_step import train_step
-from .trainer import train_model
+from .trainer import TrainingHistory, train_model
 from .validation import validate_model
 
 __all__ = [
@@ -16,6 +16,7 @@ __all__ = [
     "create_loss_function",
     "create_optimizer",
     "split_dataset",
+    "TrainingHistory",
     "train_model",
     "train_step",
     "validate_model",
