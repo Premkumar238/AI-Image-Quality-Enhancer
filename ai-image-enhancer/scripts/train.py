@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+from PIL import Image
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -30,11 +31,25 @@ from ml.training import (
 )
 
 
+TRAINING_IMAGE_SIZE = (1200, 800)
+
+
+def _resize_for_training(
+    image: Image.Image,
+    size: tuple[int, int] = TRAINING_IMAGE_SIZE,
+) -> Image.Image:
+    """Resize an image to a consistent training size for batching."""
+    rgb_image = image.convert("RGB")
+    if rgb_image.size == size:
+        return rgb_image
+    return rgb_image.resize(size, Image.Resampling.BICUBIC)
+
+
 class PreparedSuperResolutionDataset(SuperResolutionDataset):
     """SuperResolutionDataset with SRCNN-compatible prepared inputs."""
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
-        image = load_image(self.image_paths[index])
+        image = _resize_for_training(load_image(self.image_paths[index]))
         prepared_input = prepare_srcnn_input(image, scale_factor=self.scale_factor)
 
         input_tensor = numpy_to_tensor(normalize_image(pil_to_numpy(prepared_input))).squeeze(0)
@@ -127,6 +142,7 @@ def run_training(config: TrainingConfig) -> int:
     )
     print(f"Training images: {split_result.train}")
     print(f"Validation images: {split_result.validation}")
+    print(f"Resizing images to: {TRAINING_IMAGE_SIZE[0]}x{TRAINING_IMAGE_SIZE[1]}")
 
     train_dataset = PreparedSuperResolutionDataset(
         config.train_directory,

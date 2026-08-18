@@ -1,11 +1,22 @@
 """Backend application entry point."""
 
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 
 from app.config import APP_NAME, is_model_loaded
+from app.ml_service import enhance_image_bytes, initialize_model
 
-app = FastAPI(title=APP_NAME)
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    initialize_model()
+    yield
+
+
+app = FastAPI(title=APP_NAME, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,3 +44,44 @@ def health():
         "application_name": APP_NAME,
         "model_loaded": is_model_loaded(),
     }
+
+
+@app.post("/api/enhance")
+async def enhance(
+    file: UploadFile = File(...),
+    scale_factor: int = Form(4),
+):
+    """Convert/enhance an uploaded image with the SRCNN model."""
+    if scale_factor not in {2, 3, 4}:
+        raise HTTPException(
+            status_code=400,
+            detail="scale_factor must be 2, 3, or 4.",
+        )
+
+    filename = file.filename or "image.jpg"
+    suffix = filename.lower()
+    if not suffix.endswith((".jpg", ".jpeg", ".png")):
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported file type. Please upload a JPG, JPEG, or PNG image.",
+        )
+
+    image_bytes = await file.read()
+    if not image_bytes:
+        raise HTTPException(status_code=400, detail="The uploaded file is empty.")
+
+    try:
+        enhanced_bytes, media_type = enhance_image_bytes(
+            image_bytes,
+            filename=filename,
+            scale_factor=scale_factor,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    output_name = f"enhanced_{filename}"
+    return Response(
+        content=enhanced_bytes,
+        media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="{output_name}"'},
+    )
