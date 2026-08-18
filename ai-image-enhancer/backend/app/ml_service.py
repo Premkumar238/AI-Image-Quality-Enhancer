@@ -6,13 +6,13 @@ import io
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageFilter, ImageOps
+from PIL import Image
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from ml.inference import predict_image
+from ml.inference import predict_image, refine_image
 from ml.models import SRCNN, load_model
 
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "models" / "srcnn.pth"
@@ -47,14 +47,6 @@ def initialize_model(checkpoint_path: Path | None = None) -> None:
     if path.exists():
         load_model(_model, path, device="cpu")
         _model_loaded = True
-
-
-def refine_image(image: Image.Image) -> Image.Image:
-    """Apply extra sharpening and contrast so blurry or dull photos look clearer."""
-    sharpened = image.filter(
-        ImageFilter.UnsharpMask(radius=2.0, percent=160, threshold=2)
-    )
-    return ImageOps.autocontrast(sharpened, cutoff=1)
 
 
 def enhance_image_bytes(

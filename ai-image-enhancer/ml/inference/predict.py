@@ -8,7 +8,7 @@ from ml.preprocessing import normalize_image, numpy_to_tensor, pil_to_numpy, ten
 
 from .input_preparation import prepare_srcnn_input
 
-MAX_OUTPUT_SIDE = 2048
+MAX_OUTPUT_SIDE = 2560
 
 
 def _upscaled_size(
@@ -66,7 +66,7 @@ def predict_image(
         if scale_factor not in {2, 3, 4}:
             raise ValueError("scale_factor must be 2, 3, or 4.")
         expected_size = _upscaled_size(*rgb_image.size, scale_factor)
-        prepared_image = rgb_image.resize(expected_size, Image.Resampling.BICUBIC)
+        prepared_image = rgb_image.resize(expected_size, Image.Resampling.LANCZOS)
     else:
         expected_size = rgb_image.size
         prepared_image = prepare_srcnn_input(rgb_image, scale_factor=scale_factor)

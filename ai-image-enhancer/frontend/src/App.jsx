@@ -4,7 +4,7 @@ import BackendStatus from './components/BackendStatus'
 import UploadArea from './components/UploadArea'
 import ImagePreview from './components/ImagePreview'
 import Button from './components/Button'
-import LoadingState from './components/LoadingState'
+import ZoomCompare from './components/ZoomCompare'
 import { checkHealth, enhanceImage } from './services/api'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png']
@@ -149,7 +149,7 @@ function App() {
             AI Image Enhancer
           </h2>
           <p className="mt-3 text-base text-gray-600 sm:text-lg">
-            Upload a photo, enlarge it with 2x/3x/4x super-resolution, then download the result.
+            Upload a photo to enlarge, sharpen, reduce noise, and boost contrast.
           </p>
         </section>
 
@@ -217,6 +217,10 @@ function App() {
               )}
             </div>
           </section>
+
+          {previewUrl && enhancedUrl ? (
+            <ZoomCompare originalSrc={previewUrl} enhancedSrc={enhancedUrl} />
+          ) : null}
 
           <section className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <label className="flex items-center gap-2 text-sm text-gray-700">
