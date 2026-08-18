@@ -137,7 +137,6 @@ def main() -> int:
     print("Running inference...")
     try:
         enhanced_image = enhance_photo(
-            model,
             image,
             scale_factor=args.scale_factor,
         )

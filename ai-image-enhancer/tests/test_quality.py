@@ -10,7 +10,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from ml.inference import denoise_image, enhance_photo, refine_image
-from ml.models import SRCNN
 
 
 def test_denoise_image_keeps_size_and_mode():
@@ -30,10 +29,9 @@ def test_refine_image_keeps_size_and_mode():
 
 
 def test_enhance_photo_upscales_and_returns_rgb():
-    model = SRCNN()
     image = Image.new("RGB", (32, 24), color=(80, 90, 100))
 
-    output = enhance_photo(model, image, scale_factor=2)
+    output = enhance_photo(image, scale_factor=2)
 
     assert output.mode == "RGB"
     assert output.size == (64, 48)

@@ -149,7 +149,7 @@ function App() {
             AI Image Enhancer
           </h2>
           <p className="mt-3 text-base text-gray-600 sm:text-lg">
-            Upload a photo to enlarge, sharpen, reduce noise, and boost contrast.
+            Upload a photo to enlarge it and reduce blur and noise.
           </p>
         </section>
 

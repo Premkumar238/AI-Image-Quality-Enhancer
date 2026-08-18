@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
 from app.config import APP_NAME, is_model_loaded
-from app.ml_service import enhance_image_bytes, initialize_model
+from app.ml_service import enhance_image_bytes, initialize_model, is_opencv_available
 
 
 @asynccontextmanager
@@ -43,6 +43,7 @@ def health():
         "status": "ok",
         "application_name": APP_NAME,
         "model_loaded": is_model_loaded(),
+        "opencv_available": is_opencv_available(),
     }
 
 
@@ -51,7 +52,7 @@ async def enhance(
     file: UploadFile = File(...),
     scale_factor: int = Form(4),
 ):
-    """Convert/enhance an uploaded image with the SRCNN model."""
+    """Convert/enhance an uploaded image using denoise, upscale, and deblur."""
     if scale_factor not in {2, 3, 4}:
         raise HTTPException(
             status_code=400,
