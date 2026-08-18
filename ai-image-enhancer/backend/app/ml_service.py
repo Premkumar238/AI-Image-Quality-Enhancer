@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from ml.inference import predict_image, refine_image
+from ml.inference import enhance_photo
 from ml.models import SRCNN, load_model
 
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "models" / "srcnn.pth"
@@ -66,13 +66,7 @@ def enhance_image_bytes(
         raise ValueError("The uploaded file is not a valid image.") from exc
 
     original_size = rgb_image.size
-    enhanced = predict_image(
-        get_model(),
-        rgb_image,
-        scale_factor=scale_factor,
-        upscale=True,
-    )
-    enhanced = refine_image(enhanced)
+    enhanced = enhance_photo(get_model(), rgb_image, scale_factor=scale_factor)
 
     suffix = Path(filename).suffix.lower()
     if suffix in {".jpg", ".jpeg"}:

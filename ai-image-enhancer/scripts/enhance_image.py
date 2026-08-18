@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from ml.inference import predict_image, refine_image
+from ml.inference import enhance_photo
 from ml.models import SRCNN, load_model
 from ml.preprocessing import load_image
 
@@ -136,13 +136,11 @@ def main() -> int:
 
     print("Running inference...")
     try:
-        enhanced_image = predict_image(
+        enhanced_image = enhance_photo(
             model,
             image,
             scale_factor=args.scale_factor,
-            upscale=True,
         )
-        enhanced_image = refine_image(enhanced_image)
     except (TypeError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
