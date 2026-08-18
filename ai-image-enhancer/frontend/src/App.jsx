@@ -4,6 +4,7 @@ import BackendStatus from './components/BackendStatus'
 import UploadArea from './components/UploadArea'
 import ImagePreview from './components/ImagePreview'
 import Button from './components/Button'
+import LoadingState from './components/LoadingState'
 import ZoomCompare from './components/ZoomCompare'
 import { checkHealth, enhanceImage } from './services/api'
 
