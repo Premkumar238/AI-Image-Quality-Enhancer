@@ -6,7 +6,7 @@ import io
 import sys
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageFilter, ImageOps
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -49,24 +49,38 @@ def initialize_model(checkpoint_path: Path | None = None) -> None:
         _model_loaded = True
 
 
+def refine_image(image: Image.Image) -> Image.Image:
+    """Apply extra sharpening and contrast so blurry or dull photos look clearer."""
+    sharpened = image.filter(
+        ImageFilter.UnsharpMask(radius=2.0, percent=160, threshold=2)
+    )
+    return ImageOps.autocontrast(sharpened, cutoff=1)
+
+
 def enhance_image_bytes(
     image_bytes: bytes,
     filename: str = "image.jpg",
     scale_factor: int = 4,
-) -> tuple[bytes, str]:
-    """Enhance an uploaded image and return encoded bytes plus media type."""
+) -> tuple[bytes, str, tuple[int, int], tuple[int, int]]:
+    """Enhance an uploaded image and return encoded bytes plus media type.
+
+    Returns:
+        A tuple of (image_bytes, media_type, original_size, output_size).
+    """
     try:
         with Image.open(io.BytesIO(image_bytes)) as image:
             rgb_image = image.convert("RGB")
     except Exception as exc:
         raise ValueError("The uploaded file is not a valid image.") from exc
 
+    original_size = rgb_image.size
     enhanced = predict_image(
         get_model(),
         rgb_image,
         scale_factor=scale_factor,
         upscale=True,
     )
+    enhanced = refine_image(enhanced)
 
     suffix = Path(filename).suffix.lower()
     if suffix in {".jpg", ".jpeg"}:
@@ -81,4 +95,4 @@ def enhance_image_bytes(
     if image_format == "JPEG":
         save_kwargs["quality"] = 95
     enhanced.save(buffer, **save_kwargs)
-    return buffer.getvalue(), media_type
+    return buffer.getvalue(), media_type, original_size, enhanced.size

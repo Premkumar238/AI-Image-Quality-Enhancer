@@ -71,7 +71,7 @@ async def enhance(
         raise HTTPException(status_code=400, detail="The uploaded file is empty.")
 
     try:
-        enhanced_bytes, media_type = enhance_image_bytes(
+        enhanced_bytes, media_type, original_size, output_size = enhance_image_bytes(
             image_bytes,
             filename=filename,
             scale_factor=scale_factor,
@@ -83,5 +83,10 @@ async def enhance(
     return Response(
         content=enhanced_bytes,
         media_type=media_type,
-        headers={"Content-Disposition": f'attachment; filename="{output_name}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{output_name}"',
+            "X-Original-Size": f"{original_size[0]}x{original_size[1]}",
+            "X-Output-Size": f"{output_size[0]}x{output_size[1]}",
+            "Access-Control-Expose-Headers": "X-Original-Size, X-Output-Size",
+        },
     )

@@ -50,6 +50,7 @@ def test_enhance_endpoint_returns_image():
     output = Image.open(io.BytesIO(response.content))
     assert output.mode == "RGB"
     assert output.size == (128, 128)
+    assert response.headers["x-output-size"] == "128x128"
 
 
 def test_enhance_endpoint_rejects_invalid_file_type():
