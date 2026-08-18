@@ -5,7 +5,6 @@ import UploadArea from './components/UploadArea'
 import ImagePreview from './components/ImagePreview'
 import Button from './components/Button'
 import LoadingState from './components/LoadingState'
-import ZoomCompare from './components/ZoomCompare'
 import { checkHealth, enhanceImage } from './services/api'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png']
@@ -218,10 +217,6 @@ function App() {
               )}
             </div>
           </section>
-
-          {previewUrl && enhancedUrl ? (
-            <ZoomCompare originalSrc={previewUrl} enhancedSrc={enhancedUrl} />
-          ) : null}
 
           <section className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <label className="flex items-center gap-2 text-sm text-gray-700">
