@@ -32,6 +32,8 @@ function App() {
   const [isEnhancing, setIsEnhancing] = useState(false)
   const [backendStatus, setBackendStatus] = useState('checking')
   const [scaleFactor, setScaleFactor] = useState(4)
+  const [originalSize, setOriginalSize] = useState(null)
+  const [enhancedSize, setEnhancedSize] = useState(null)
 
   useEffect(() => {
     let isMounted = true
@@ -92,6 +94,8 @@ function App() {
 
     setErrorMessage('')
     setEnhancedUrl(null)
+    setEnhancedSize(null)
+    setOriginalSize(null)
     setSelectedFile(file)
   }
 
@@ -100,6 +104,7 @@ function App() {
 
     setErrorMessage('')
     setIsEnhancing(true)
+    setEnhancedSize(null)
 
     try {
       const blob = await enhanceImage(selectedFile, scaleFactor)
@@ -144,7 +149,7 @@ function App() {
             AI Image Enhancer
           </h2>
           <p className="mt-3 text-base text-gray-600 sm:text-lg">
-            Upload an image, convert it with the trained SRCNN model, and download the result.
+            Upload a photo, enlarge it with 2x/3x/4x super-resolution, then download the result.
           </p>
         </section>
 
@@ -172,13 +177,22 @@ function App() {
               src={previewUrl}
               alt="Selected image preview"
               label="Original Image"
+              sizeLabel={originalSize ? `${originalSize.width} × ${originalSize.height}` : ''}
+              onImageLoad={setOriginalSize}
             />
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">Converted Result</p>
+              <p className="text-sm font-medium text-gray-700">
+                Converted Result
+                {enhancedSize ? (
+                  <span className="ml-2 font-normal text-gray-500">
+                    {enhancedSize.width} × {enhancedSize.height}
+                  </span>
+                ) : null}
+              </p>
               {isEnhancing ? (
                 <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-indigo-300 bg-indigo-50 sm:h-80">
-                  <LoadingState message="Converting your image..." />
+                  <LoadingState message="Upscaling and converting your image..." />
                 </div>
               ) : enhancedUrl ? (
                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
@@ -186,12 +200,18 @@ function App() {
                     src={enhancedUrl}
                     alt="Converted image"
                     className="max-h-96 w-full object-contain"
+                    onLoad={(event) => {
+                      setEnhancedSize({
+                        width: event.currentTarget.naturalWidth,
+                        height: event.currentTarget.naturalHeight,
+                      })
+                    }}
                   />
                 </div>
               ) : (
                 <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 sm:h-80">
                   <p className="text-sm text-gray-500">
-                    Click &quot;Convert Image&quot; to enhance the uploaded photo
+                    Click &quot;Convert Image&quot; to enlarge and enhance the uploaded photo
                   </p>
                 </div>
               )}

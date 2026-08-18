@@ -55,7 +55,7 @@ def test_enhance_image_cli_success(tmp_path):
 
     output_image = Image.open(output_path)
     assert output_image.mode == "RGB"
-    assert output_image.size == input_image.size
+    assert output_image.size == (input_image.size[0] * 4, input_image.size[1] * 4)
 
 
 def test_enhance_image_cli_scale_factor_2(tmp_path):
@@ -69,7 +69,7 @@ def test_enhance_image_cli_scale_factor_2(tmp_path):
     assert output_path.exists()
 
     output_image = Image.open(output_path)
-    assert output_image.size == input_image.size
+    assert output_image.size == (input_image.size[0] * 2, input_image.size[1] * 2)
 
 
 def test_enhance_image_cli_scale_factor_4(tmp_path):
@@ -83,7 +83,7 @@ def test_enhance_image_cli_scale_factor_4(tmp_path):
     assert output_path.exists()
 
     output_image = Image.open(output_path)
-    assert output_image.size == input_image.size
+    assert output_image.size == (input_image.size[0] * 4, input_image.size[1] * 4)
 
 
 def test_enhance_image_cli_missing_input(tmp_path):

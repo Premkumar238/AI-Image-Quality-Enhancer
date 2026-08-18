@@ -100,3 +100,13 @@ def test_predict_image_handles_finite_output():
     output_array = np.array(output_image, dtype=np.float32)
 
     assert np.isfinite(output_array).all()
+
+
+def test_predict_image_upscale_increases_dimensions():
+    model = SRCNN()
+    input_image = Image.new("RGB", (32, 24), color="red")
+
+    output_image = predict_image(model, input_image, scale_factor=2, upscale=True)
+
+    assert output_image.size == (64, 48)
+    assert output_image.mode == "RGB"

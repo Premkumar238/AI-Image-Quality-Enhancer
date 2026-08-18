@@ -61,7 +61,12 @@ def enhance_image_bytes(
     except Exception as exc:
         raise ValueError("The uploaded file is not a valid image.") from exc
 
-    enhanced = predict_image(get_model(), rgb_image, scale_factor=scale_factor)
+    enhanced = predict_image(
+        get_model(),
+        rgb_image,
+        scale_factor=scale_factor,
+        upscale=True,
+    )
 
     suffix = Path(filename).suffix.lower()
     if suffix in {".jpg", ".jpeg"}:

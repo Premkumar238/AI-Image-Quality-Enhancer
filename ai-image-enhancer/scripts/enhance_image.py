@@ -34,7 +34,7 @@ def parse_args() -> argparse.Namespace:
         "--scale-factor",
         type=int,
         default=4,
-        help="Downsampling factor used to prepare the model input (default: 4).",
+        help="Upscale factor. The output image will be this many times larger (default: 4).",
     )
     parser.add_argument(
         "--checkpoint",
@@ -140,6 +140,7 @@ def main() -> int:
             model,
             image,
             scale_factor=args.scale_factor,
+            upscale=True,
         )
     except (TypeError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
