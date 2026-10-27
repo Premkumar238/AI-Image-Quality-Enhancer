@@ -11,30 +11,25 @@ function Header() {
               AI Image Quality Enhancer
             </span>
             <span className="hidden text-xs text-slate-500 sm:block">
-              Powered by Prem Kumar
+              Photo upscaler
             </span>
           </span>
         </a>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-          <a href="#enhance" className="hover:text-indigo-600">
+        <nav className="flex items-center gap-4 text-sm font-medium text-slate-600 sm:gap-6">
+          <a href="#enhance" className="hidden hover:text-indigo-600 sm:inline">
             Enhance
           </a>
-          <a href="#how-it-works" className="hover:text-indigo-600">
+          <a href="#how-it-works" className="hidden hover:text-indigo-600 md:inline">
             How it works
           </a>
-          <a href="#features" className="hover:text-indigo-600">
+          <a href="#features" className="hidden hover:text-indigo-600 md:inline">
             Features
           </a>
           <a href="#contact" className="hover:text-indigo-600">
             Contact
           </a>
         </nav>
-
-        <p className="hidden text-right text-xs text-slate-500 sm:block md:text-sm">
-          Powered by
-          <span className="mt-0.5 block font-semibold text-slate-800">Prem Kumar</span>
-        </p>
       </div>
     </header>
   )
