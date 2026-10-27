@@ -148,13 +148,23 @@ def enhance_photo(
     scale_factor: int = 4,
     model=None,
 ) -> Image.Image:
-    """Denoise, upscale, and reduce blur using a stable classical pipeline.
+    """Enhance a photo with Real-ESRGAN when available, else classical fallback.
 
     The optional ``model`` argument is kept for compatibility but is not used.
-    The trained SRCNN checkpoint was adding color noise on small blurry photos,
-    so the website uses reliable OpenCV processing instead.
     """
     del model
+
+    try:
+        from ml.inference.realesrgan_enhance import (
+            enhance_with_realesrgan,
+            is_realesrgan_ready,
+        )
+
+        if is_realesrgan_ready():
+            return enhance_with_realesrgan(image, scale_factor=scale_factor)
+    except Exception:
+        # Fall back to classical processing if weights/model fail to load.
+        pass
 
     cleaned = denoise_image(image)
     upscaled = upscale_image(cleaned, scale_factor=scale_factor)

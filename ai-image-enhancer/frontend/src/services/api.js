@@ -35,7 +35,7 @@ export async function enhanceImage(file, scaleFactor = 4) {
     })
   } catch {
     throw new Error(
-      'Unable to reach the backend. Start it with: python -m uvicorn app.main:app --reload (from the backend folder).',
+      'Unable to reach the backend. Start it with: python -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload (from the backend folder).',
     )
   }
 

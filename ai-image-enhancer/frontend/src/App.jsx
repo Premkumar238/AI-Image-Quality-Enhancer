@@ -31,6 +31,9 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('')
   const [isEnhancing, setIsEnhancing] = useState(false)
   const [backendStatus, setBackendStatus] = useState('checking')
+  const [opencvAvailable, setOpencvAvailable] = useState(null)
+  const [enhancementPipeline, setEnhancementPipeline] = useState(null)
+  const [realesrganLoaded, setRealesrganLoaded] = useState(null)
   const [scaleFactor, setScaleFactor] = useState(4)
   const [originalSize, setOriginalSize] = useState(null)
   const [enhancedSize, setEnhancedSize] = useState(null)
@@ -43,6 +46,9 @@ function App() {
         const health = await checkHealth()
         if (isMounted && health.status === 'ok') {
           setBackendStatus('connected')
+          setOpencvAvailable(health.opencv_available ?? null)
+          setEnhancementPipeline(health.enhancement_pipeline ?? null)
+          setRealesrganLoaded(health.realesrgan_loaded ?? null)
         } else if (isMounted) {
           setBackendStatus('offline')
         }
@@ -141,7 +147,16 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header statusIndicator={<BackendStatus status={backendStatus} />} />
+      <Header
+        statusIndicator={
+          <BackendStatus
+            status={backendStatus}
+            opencvAvailable={opencvAvailable}
+            pipeline={enhancementPipeline}
+            realesrganLoaded={realesrganLoaded}
+          />
+        }
+      />
 
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <section className="mb-8 text-center">
@@ -149,7 +164,7 @@ function App() {
             AI Image Enhancer
           </h2>
           <p className="mt-3 text-base text-gray-600 sm:text-lg">
-            Upload a photo to enlarge it and reduce blur and noise.
+            Upload a photo to upscale, sharpen, and restore detail with Real-ESRGAN.
           </p>
         </section>
 
@@ -162,6 +177,17 @@ function App() {
             <p className="mt-2 text-center text-sm text-gray-500">
               Supported formats: {ACCEPTED_FORMATS}
             </p>
+            {backendStatus === 'connected' && realesrganLoaded === false ? (
+              <p
+                className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+                role="alert"
+              >
+                Real-ESRGAN weights are missing. From the project folder run:
+                {' '}
+                <code className="text-xs">python scripts/download_realesrgan.py</code>
+                , then restart the backend.
+              </p>
+            ) : null}
             {errorMessage && (
               <p
                 className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"

@@ -1,4 +1,4 @@
-"""Load the SRCNN model and run image enhancement for the API."""
+"""Load enhancement models and run image enhancement for the API."""
 
 from __future__ import annotations
 
@@ -12,18 +12,25 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from ml.inference import enhance_photo, is_opencv_available
+from ml.inference import enhance_photo, is_opencv_available, is_realesrgan_ready
+from ml.inference.realesrgan_enhance import download_weights, get_enhancer
 from ml.models import SRCNN, load_model
 
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "models" / "srcnn.pth"
 
 _model: SRCNN | None = None
 _model_loaded = False
+_realesrgan_loaded = False
 
 
 def is_model_loaded() -> bool:
-    """Return True when trained checkpoint weights are loaded."""
-    return _model_loaded
+    """Return True when Real-ESRGAN (preferred) or SRCNN weights are loaded."""
+    return _realesrgan_loaded or _model_loaded
+
+
+def is_realesrgan_loaded() -> bool:
+    """Return True when Real-ESRGAN weights are ready for inference."""
+    return _realesrgan_loaded
 
 
 def get_model() -> SRCNN:
@@ -36,8 +43,16 @@ def get_model() -> SRCNN:
 
 
 def initialize_model(checkpoint_path: Path | None = None) -> None:
-    """Create the SRCNN model and load checkpoint weights when available."""
-    global _model, _model_loaded
+    """Prepare Real-ESRGAN (and optional SRCNN) for inference."""
+    global _model, _model_loaded, _realesrgan_loaded
+
+    _realesrgan_loaded = False
+    try:
+        download_weights()
+        get_enhancer()
+        _realesrgan_loaded = is_realesrgan_ready()
+    except Exception as exc:
+        print(f"Warning: Real-ESRGAN not ready ({exc}). Falling back to OpenCV.")
 
     _model = SRCNN()
     _model.eval()

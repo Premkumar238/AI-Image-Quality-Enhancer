@@ -8,7 +8,7 @@ pillow
 opencv-python
 numpy
 
-# Machine learning
+# Machine learning (Real-ESRGAN uses torch + included RRDBNet)
 torch
 torchvision
 

@@ -1,6 +1,7 @@
 # ML pipeline, CLI, and tests
 numpy
 pillow
+opencv-python
 torch
 torchvision
 

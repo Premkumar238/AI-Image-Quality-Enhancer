@@ -1,8 +1,24 @@
-function BackendStatus({ status }) {
+function BackendStatus({ status, opencvAvailable, pipeline, realesrganLoaded }) {
   if (status === 'connected') {
+    if (realesrganLoaded || pipeline === 'realesrgan-x4plus') {
+      return (
+        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+          Real-ESRGAN Ready
+        </span>
+      )
+    }
+
+    if (opencvAvailable === false) {
+      return (
+        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+          Backend needs setup
+        </span>
+      )
+    }
+
     return (
-      <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-        Backend Connected
+      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+        Fallback mode
       </span>
     )
   }

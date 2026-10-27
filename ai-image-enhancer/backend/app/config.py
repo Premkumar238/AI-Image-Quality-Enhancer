@@ -3,6 +3,7 @@
 from app.ml_service import is_model_loaded as _is_model_loaded
 
 APP_NAME = "AI Image Quality Enhancer API"
+ENHANCEMENT_PIPELINE = "opencv-fallback"
 
 
 def is_model_loaded() -> bool:
