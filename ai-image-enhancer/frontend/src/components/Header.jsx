@@ -1,4 +1,4 @@
-function Header({ statusIndicator }) {
+function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
@@ -11,7 +11,7 @@ function Header({ statusIndicator }) {
               AI Image Quality Enhancer
             </span>
             <span className="hidden text-xs text-slate-500 sm:block">
-              Real-ESRGAN photo upscaler
+              Powered by Prem Kumar
             </span>
           </span>
         </a>
@@ -26,9 +26,15 @@ function Header({ statusIndicator }) {
           <a href="#features" className="hover:text-indigo-600">
             Features
           </a>
+          <a href="#contact" className="hover:text-indigo-600">
+            Contact
+          </a>
         </nav>
 
-        <div className="shrink-0">{statusIndicator}</div>
+        <p className="hidden text-right text-xs text-slate-500 sm:block md:text-sm">
+          Powered by
+          <span className="mt-0.5 block font-semibold text-slate-800">Prem Kumar</span>
+        </p>
       </div>
     </header>
   )

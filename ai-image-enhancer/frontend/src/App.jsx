@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import BackendStatus from './components/BackendStatus'
 import UploadArea from './components/UploadArea'
 import ImagePreview from './components/ImagePreview'
 import Button from './components/Button'
@@ -42,8 +41,6 @@ function App() {
   const [isEnhancing, setIsEnhancing] = useState(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [backendStatus, setBackendStatus] = useState('checking')
-  const [opencvAvailable, setOpencvAvailable] = useState(null)
-  const [enhancementPipeline, setEnhancementPipeline] = useState(null)
   const [realesrganLoaded, setRealesrganLoaded] = useState(null)
   const [scaleFactor, setScaleFactor] = useState(4)
   const [originalSize, setOriginalSize] = useState(null)
@@ -57,8 +54,6 @@ function App() {
         const health = await checkHealth()
         if (isMounted && health.status === 'ok') {
           setBackendStatus('connected')
-          setOpencvAvailable(health.opencv_available ?? null)
-          setEnhancementPipeline(health.enhancement_pipeline ?? null)
           setRealesrganLoaded(health.realesrgan_loaded ?? null)
         } else if (isMounted) {
           setBackendStatus('offline')
@@ -189,16 +184,7 @@ function App() {
 
   return (
     <div id="top" className="flex min-h-screen flex-col bg-slate-50">
-      <Header
-        statusIndicator={
-          <BackendStatus
-            status={backendStatus}
-            opencvAvailable={opencvAvailable}
-            pipeline={enhancementPipeline}
-            realesrganLoaded={realesrganLoaded}
-          />
-        }
-      />
+      <Header />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <section className="mb-10 overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-indigo-50/40 to-slate-100 px-6 py-10 shadow-sm sm:px-10">
